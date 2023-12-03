@@ -419,7 +419,7 @@ def group_rectangles(rectangles, min_neighbors=3, eps=0.2):
 
 
 def run(model, in_img, out_img, 
-        scale_factor=1.1, min_neighbors=3, eps=0.2, debug=True, test=False):
+        scale_factor=1.1, min_neighbors=3, eps=0.2, test=False):
     '''
     Implement object detection workflow.
     '''
@@ -463,46 +463,7 @@ def run(model, in_img, out_img,
 
     end = timer()
     total_time = (end - start) * 1000
-    print(f'Total time on host: {total_time:0.6f} ms\n')
-
-    # Test
-    if debug:
-        gray_img = d_gray_img.copy_to_host()
-        sat = d_sat.copy_to_host()
-        sqsat = d_sqsat.copy_to_host()
-        test_convert_rgb2gray(in_img, gray_img)
-        test_calculate_sat(gray_img, sat, sqsat)        
-
-
-def test_convert_rgb2gray(img, gray_img):
-    '''
-    Test convert_rgb2gray function
-    '''
-    gray_img_np = (img @ [0.114, 0.587, 0.299]).astype(np.uint8)
-    gray_img_cv = cv.cvtColor(img, code=cv.COLOR_BGR2GRAY)
- 
-    print('Convert rgb to grayscale error:');
-    print(' - Jitted vs Numpy: ', 
-          np.mean(np.abs(gray_img.astype(np.int16) - gray_img_np)))
-    print(' - Jitted vs Opencv:', 
-          np.mean(np.abs(gray_img.astype(np.int16) - gray_img_cv)))
- 
- 
-def test_calculate_sat(img, sat, sqsat):
-    '''
-    Test calculate_sat function
-    '''
-    sat_np = np.array(img, dtype=np.int64)
-    sat_np.cumsum(axis=0, out=sat_np).cumsum(axis=1, out=sat_np)
-    sqsat_np = np.power(img, 2, dtype=np.int64)
-    sqsat_np.cumsum(axis=0, out=sqsat_np).cumsum(axis=1, out=sqsat_np)
- 
-    total = np.sum(img)
-    assert(total == sat[-1, -1])
-    assert(total == sat_np[-1, -1])
-    assert(np.array_equal(sat[1:, 1:], sat_np))
-    assert(np.array_equal(sqsat[1:, 1:], sqsat_np))
-    print('Calculate SAT: Pass')
+    print(f'Total time on host: {total_time:0.6f} ms\n')  
 
 
 def main(_argv=None):
@@ -517,7 +478,6 @@ def main(_argv=None):
     parser.add_argument('-s', default=1.1, type=float, help='Scale factor')
     parser.add_argument('-m', default=3, type=int, help='Min neighbors')
     parser.add_argument('-e', default=0.2, type=float, help='Epsilon')
-    parser.add_argument('--test', default=False, action='store_true', help='Grayscale conversion on host')
     params = parser.parse_args(argv)
  
     #Load Haar Cascade model
@@ -533,7 +493,7 @@ def main(_argv=None):
     scale_factor = params.s
     min_neighbors = params.m
     eps = params.e
-    run(model, in_img, out_img, scale_factor, min_neighbors, eps, debug=True, test=params.test)
+    run(model, in_img, out_img, scale_factor, min_neighbors, eps)
  
     # Write output image
     cv.imwrite(params.output, out_img)
