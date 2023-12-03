@@ -366,7 +366,7 @@ def group_rectangles(rectangles, min_neighbors=3, eps=0.2):
 
 
 def run(model, in_img, out_img, 
-        scale_factor=1.1, min_neighbors=3, eps=0.2, debug=True):
+        scale_factor=1.1, min_neighbors=3, eps=0.2):
     '''
     Implement object detection workflow.
     '''
@@ -398,42 +398,6 @@ def run(model, in_img, out_img,
     total_time = (end - start) * 1000
     print(f'Total time on host: {total_time:0.6f} ms\n')
 
-    # Test
-    if debug:
-        test_convert_rgb2gray(in_img, gray_img)
-        test_calculate_sat(gray_img, sat, sqsat)
-
-
-def test_convert_rgb2gray(img, gray_img):
-    '''
-    Test convert_rgb2gray function
-    '''
-    gray_img_np = (img @ [0.114, 0.587, 0.299]).astype(np.uint8)
-    gray_img_cv = cv.cvtColor(img, code=cv.COLOR_BGR2GRAY)
- 
-    print('Convert rgb to grayscale error:');
-    print(' - Jitted vs Numpy: ', 
-          np.mean(np.abs(gray_img.astype(np.int16) - gray_img_np)))
-    print(' - Jitted vs Opencv:', 
-          np.mean(np.abs(gray_img.astype(np.int16) - gray_img_cv)))
- 
- 
-def test_calculate_sat(img, sat, sqsat):
-    '''
-    Test calculate_sat function
-    '''
-    sat_np = np.array(img, dtype=np.int64)
-    sat_np.cumsum(axis=0, out=sat_np).cumsum(axis=1, out=sat_np)
-    sqsat_np = np.power(img, 2, dtype=np.int64)
-    sqsat_np.cumsum(axis=0, out=sqsat_np).cumsum(axis=1, out=sqsat_np)
- 
-    total = np.sum(img)
-    assert(total == sat[-1, -1])
-    assert(total == sat_np[-1, -1])
-    assert(np.array_equal(sat[1:, 1:], sat_np))
-    assert(np.array_equal(sqsat[1:, 1:], sqsat_np))
-    print('Calculate SAT: Pass')
-
 
 def main(_argv=None):
     argv = _argv.split() if _argv else sys.argv[1:]
@@ -442,8 +406,8 @@ def main(_argv=None):
     parser = argparse.ArgumentParser(description='Face detection using Cascaded-classifiers.', 
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('model', help="Opencv's Haar Cascade pre-trained model")
-    # parser.add_argument('input', help='Input image')
-    # parser.add_argument('output', help='Output image')
+    parser.add_argument('input', help='Input image')
+    parser.add_argument('output', help='Output image')
     parser.add_argument('-s', default=1.1, type=float, help='Scale factor')
     parser.add_argument('-m', default=3, type=int, help='Min neighbors')
     parser.add_argument('-e', default=0.2, type=float, help='Epsilon')
@@ -453,29 +417,19 @@ def main(_argv=None):
     model = load_model(params.model)    
  
     # Read input image
-    # in_img = cv.imread(params.input)
+    in_img = cv.imread(params.input)
 
-     #camere
-    cap = cv.VideoCapture(-1)
-    while cap.isOpened():
-        ret, in_img = cap.read()
-        cv.imshow('out', in_img)
-        # Press Q on keyboard to stop recording
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
-    cap.release()
-    cv.destroyAllWindows()
     # Allocate memory for output image
-    # out_img = in_img.copy()
+    out_img = in_img.copy()
  
     # Run object detection workflow
     scale_factor = params.s
     min_neighbors = params.m
     eps = params.e
-    run(model, in_img, scale_factor, min_neighbors, eps, debug=True)
+    run(model, in_img, out_img, scale_factor, min_neighbors, eps)
  
     # Write output image
-    # cv.imwrite(params.output, out_img)
+    cv.imwrite(params.output, out_img)
 
 # Execute
 main()
