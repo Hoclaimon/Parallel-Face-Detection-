@@ -21,5 +21,5 @@ Lý do cần lập trình song song để tối ưu:
 5. cd đến folder project
 6. pip install -r requierments.txt
 ## Chạy chương trình
-python serial.py haarcascade_frontalface_alt.xml input1.jpg out_se_1.jpg (chạy code tuần tự)
-python parallel.py haarcascade_frontalface_alt.xml input1.jpg out_pa_1.jpg (chạy code song song)
+1. python serial.py haarcascade_frontalface_alt.xml input1.jpg out_se_1.jpg (chạy code tuần tự)
+2. python parallel.py haarcascade_frontalface_alt.xml input1.jpg out_pa_1.jpg (chạy code song song)
