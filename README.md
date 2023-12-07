@@ -12,3 +12,14 @@ Mô tả:
 Lý do cần lập trình song song để tối ưu:
 -	Ứng dụng sẽ chạy chậm nếu lập trình tuần tự.
 -	Nhu cầu xử lý dữ liệu lớn, ảnh có độ phân giải cao, video, streaming video trong thời gian thực.
+
+## Cài đặt chương trình
+1. Tạo 1 folder chứa môi trường ảo (venv) bằng câu lệnh : python -m venv <Tên folder bạn muốn>
+2. cd đến folder đó 
+3. gitclone 
+4. Chạy câu lệnh : Script\activate.bat
+5. cd đến folder project
+6. pip install -r requierments.txt
+## Chạy chương trình
+python serial.py haarcascade_frontalface_alt.xml input1.jpg out_se_1.jpg (chạy code tuần tự)
+python parallel.py haarcascade_frontalface_alt.xml input1.jpg out_pa_1.jpg (chạy code song song)
