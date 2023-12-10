@@ -20,6 +20,15 @@ Lý do cần lập trình song song để tối ưu:
 4. Chạy câu lệnh : Script\activate.bat
 5. cd đến folder project
 6. pip install -r requierments.txt
+
 ## Chạy chương trình
 1. python serial.py haarcascade_frontalface_alt.xml input1.jpg out_se_1.jpg (chạy code tuần tự)
 2. python parallel.py haarcascade_frontalface_alt.xml input1.jpg out_pa_1.jpg (chạy code song song)
+
+## Chạy trên colab
+1. Import opencv
+   - import cv2 as cv
+   - from google.colab.patches import cv2_imshow
+2. Chạy code
+   - !python serial.py haarcascade_frontalface_alt.xml input1.jpg out_se_1.jpg (chạy code tuần tự)
+   - !python parallel.py haarcascade_frontalface_alt.xml input1.jpg out_pa_1.jpg (chạy code song song)
